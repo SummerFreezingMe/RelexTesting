@@ -49,7 +49,7 @@ public class SequenceController {
     @GetMapping("/get_medium_value")
     public Map<String, String> getMediumValue() {
 
-        OptionalDouble n = sequenceService.getMediumValue(sequence);
+        Double n = sequenceService.getMediumValue(sequence);
         Map<String, String> model = new HashMap<>();
         model.put("medium_value", String.valueOf(n));
         return model;
@@ -81,7 +81,7 @@ public class SequenceController {
         return model;
     }
 
-    @RequestMapping(value = "/operation", method = RequestMethod.GET)
+    @RequestMapping(value = "/operation", method = RequestMethod.GET, produces = {"application/json", "application/xml"})
     public Map<String, String> getValue(@RequestBody String json) {
         return switch (sequenceService.readOperation(json)) {
             case ("get_max_value") -> getMaxValue();

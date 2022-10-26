@@ -37,9 +37,9 @@ public class SequenceService {
         return Collections.min(n.getSequence());
     }
 
-    public OptionalDouble getMediumValue(NumberSequence n) {
-        return n.getSequence().stream().mapToLong(a -> a).sorted()
-                .skip((n.getSize() - 1) / 2).limit(2 - n.getSize() % 2).average();
+    public Double getMediumValue(NumberSequence n) {
+        return n.getSequence().isEmpty() ? null : n.getSequence().stream().mapToLong(a -> a).sorted()
+                .skip((n.getSize() - 1) / 2).limit(2 - n.getSize() % 2).average().getAsDouble();
     }
 
     public Long getAverageValue(NumberSequence n) {
