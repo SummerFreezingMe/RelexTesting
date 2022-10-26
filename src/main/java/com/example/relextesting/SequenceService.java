@@ -11,22 +11,8 @@ import java.util.*;
 
 @Service
 public class SequenceService {
-    public NumberSequence readFile() {
-        File file = new File("src/main/java/com/example/relextesting/file_path.json");
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            while (reader.ready()) {
-                sb.append(reader.readLine());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String jsonString = sb.toString();
+    public NumberSequence readFile(String jsonString) {
         JSONObject jo = new JSONObject(jsonString);
-        return readSequence(jo);
-    }
-
-    public NumberSequence readSequence(JSONObject jo) {
         File file = new File(String.valueOf(jo.get("file_path")));
         List<Long> list = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -39,6 +25,10 @@ public class SequenceService {
         return new NumberSequence(list);
     }
 
+    public String readOperation(String jsonString) {
+        JSONObject jo = new JSONObject(jsonString);
+        return String.valueOf(jo.get("operation"));
+    }
     public Long getMaxValue(NumberSequence n) {
         return Collections.max(n.getSequence());
     }
@@ -59,42 +49,46 @@ public class SequenceService {
     }
 
     public List<List<Long>> getAscSequence(NumberSequence n) {
-        int[] ans = new int[n.getSize()];
-        List<List<Long>> l = new ArrayList<>();
-        Arrays.fill(ans, 1);
+        int[] lengthMatrix = new int[n.getSize()];
+        List<List<Long>> list = new ArrayList<>();
+        Arrays.fill(lengthMatrix, 1);
         int max = 0;
-        for (int i = 1; i < ans.length; i++) {
-                if (n.getSequence().get(i) > n.getSequence().get(i-1)) {
-                    int peak = ans[i-1] + 1;
-                    ans[i] = peak;
+        for (int i = 1; i < lengthMatrix.length; i++) {
+            if (n.getSequence().get(i) > n.getSequence().get(i - 1)) {
+                int peak = lengthMatrix[i - 1] + 1;
+                lengthMatrix[i] = peak;
+                if (peak > max) {
                     max = peak;
                 }
             }
-        for (int k = 0; k < ans.length; k++) {
-           if (max == ans[k]){
-               l.add(n.getSequence().subList(k-max+1,k+1));
-           }
         }
-        return l;
+        for (int k = 0; k < lengthMatrix.length; k++) {
+            if (max == lengthMatrix[k]) {
+                list.add(n.getSequence().subList(k - max + 1, k + 1));
+            }
+        }
+        return list;
     }
 
     public List<List<Long>> getDescSequence(NumberSequence n) {
-        int[] ans = new int[n.getSize()];
-        List<List<Long>> l = new ArrayList<>();
-        Arrays.fill(ans, -1);
+        int[] lengthMatrix = new int[n.getSize()];
+        List<List<Long>> list = new ArrayList<>();
+        Arrays.fill(lengthMatrix, -1);
         int min = 0;
-        for (int i = 1; i < ans.length; i++) {
-            if (n.getSequence().get(i) < n.getSequence().get(i-1)) {
-                int peak = ans[i-1] - 1;
-                ans[i] = peak;
-                min = peak;
+        for (int i = 1; i < lengthMatrix.length; i++) {
+            if (n.getSequence().get(i) < n.getSequence().get(i - 1)) {
+                int peak = lengthMatrix[i - 1] - 1;
+                lengthMatrix[i] = peak;
+                if (peak < min) {
+                    min = peak;
+                }
             }
         }
-        for (int k = 0; k < ans.length; k++) {
-            if (min == ans[k]){
-                l.add(n.getSequence().subList(k+min+1,k+1));
+        for (int k = 0; k < lengthMatrix.length; k++) {
+            if (min == lengthMatrix[k]) {
+                list.add(n.getSequence().subList(k + min + 1, k + 1));
             }
         }
-        return l;
+        return list;
     }
 }
