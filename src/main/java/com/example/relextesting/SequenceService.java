@@ -5,12 +5,14 @@ import com.example.relextesting.domain.NumberSequence;
 
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+import springfox.documentation.annotations.Cacheable;
 
 import java.io.*;
 import java.util.*;
 
 @Service
 public class SequenceService {
+    @Cacheable(value = "sequence")
     public NumberSequence readFile(String jsonString) {
         JSONObject jo = new JSONObject(jsonString);
         File file = new File(String.valueOf(jo.get("file_path")));
@@ -22,7 +24,10 @@ public class SequenceService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new NumberSequence(list);
+        NumberSequence sequence =new NumberSequence(list);
+        int seqHash = sequence.hashCode();
+        System.out.println(seqHash);
+        return sequence;
     }
 
     public String readOperation(String jsonString) {
@@ -37,7 +42,7 @@ public class SequenceService {
         return Collections.min(n.getSequence());
     }
 
-    public Double getMediumValue(NumberSequence n) {
+    public Double getMedianValue(NumberSequence n) {
         return n.getSequence().isEmpty() ? null : n.getSequence().stream().mapToLong(a -> a).sorted()
                 .skip((n.getSize() - 1) / 2).limit(2 - n.getSize() % 2).average().getAsDouble();
     }
